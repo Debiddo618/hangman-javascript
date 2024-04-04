@@ -7,9 +7,19 @@ const finalMessage = document.getElementById('final-message');
 
 const figureParts = document.querySelectorAll('.figure-part');
 
-const words = ['application', 'programming', 'interface', 'wizard', 'python', 'java'];
+// const words = ['application', 'programming', 'interface', 'wizard', 'python', 'java'];
+// let selectedWord = words[Math.floor(Math.random()*words.length)];
+let selectedWord="";
 
-let selectedWord = words[Math.floor(Math.random()*words.length)];
+// get the word
+function getWord(){
+    fetch('https://random-word-api.herokuapp.com/word')
+        .then(res => res.json())
+        .then(data => {
+            selectedWord = data[0];
+            displayWord();
+        });
+}
 
 let correctLetters = [];
 let wrongLetters = [];
@@ -29,7 +39,7 @@ function displayWord(){
 
     const innerWord = wordEl.innerText.replace(/\n/g,'');
 
-    if(innerWord === selectedWord){
+    if(innerWord === selectedWord && selectedWord !== ""){
         finalMessage.innerText = ' Congratulation! You won! 😃';
         popup.style.display = 'flex';
     }
@@ -55,7 +65,7 @@ function updateWrongLettersEl(){
 
     //check if lost
     if(wrongLetters.length === figureParts.length){
-        finalMessage.innerText = 'Unfortunately you lost. 😟'
+        finalMessage.innerText = `Unfortunately you lost. The correct word is ${selectedWord}. 😟`
         popup.style.display = 'flex';
     }
 }
@@ -96,10 +106,11 @@ playAgainBtn.addEventListener('click',() => {
     correctLetters.splice(0);
     wrongLetters.splice(0);
 
-    selectedWord = words[Math.floor(Math.random()*words.length)];
-    displayWord();
+    // selectedWord = words[Math.floor(Math.random()*words.length)];
+    getWord();
     updateWrongLettersEl();
     popup.style.display = 'none';
-
+    displayWord();
 });
-displayWord();
+
+getWord();
